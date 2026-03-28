@@ -1,6 +1,5 @@
 import 'package:hci_final_project/data/sample_problems.dart';
 import '../models/lesson.dart';
-import '../models/subject.dart';
 
 final vectorLesson = Lesson(
   title: "Vectors",

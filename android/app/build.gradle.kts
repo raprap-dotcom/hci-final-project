@@ -42,3 +42,16 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("androidx.activity:activity:1.8.1")
+        force("androidx.activity:activity-ktx:1.8.1")
+        force("androidx.lifecycle:lifecycle-common:2.7.0")
+        force("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+        force("androidx.datastore:datastore-core-android:1.1.7")
+    }
+}

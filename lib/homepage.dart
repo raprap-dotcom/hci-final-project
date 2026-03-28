@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hci_final_project/login_wrapper.dart';
-import 'package:hci_final_project/theme/app_theme.dart';
+import 'package:hci_final_project/widgets/bottom_nav_bar.dart';
 import '../data/lessons/linear_algebra.dart';
 import '../data/lessons/integral_calculus.dart';
 import '../data/lessons/physics.dart';
 import '../data/lessons/chemistry.dart';
 import 'screens/lessons_list_screen.dart';
 import 'local_storage.dart';
+import 'progress_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,8 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   bool _showHomeContent = true;
   bool _showSettingsContent = false;
-
-  bool get _isInMainTabs => !_showHomeContent && !_showSettingsContent;
 
   int _selectedAvatar = 0;
   int animationKey = 0;
@@ -48,10 +47,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Screens for each tab (you can replace later)
   List<Widget> get _pages => [
+    Builder(builder: (context) => _homeContent(context)),
+    const ProgressPage(),
     Builder(builder: (context) => _subjectsContent(context)),
     Builder(builder: (context) => _progressContent(context)),
     Builder(builder: (context) => _profileContent(context)),
-    Builder(builder: (context) => _settingsContent(context)),
   ];
 
   void _onItemTapped(int index) {
@@ -173,49 +173,90 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final sizes = theme.extension<AppSizes>();
+    // All pages use light blue background
+    const bgColor = Color(0xFFE1ECF6);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      extendBody: true,
+      backgroundColor: bgColor,
 
-      appBar: AppBar(title: const Text("MathMaster")),
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: const Color(0xFF395886),
+        title: Text(
+          "MathMaster",
+          style: GoogleFonts.poppins(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
 
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        backgroundColor: Colors.white,
+        child: Column(
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF395886)),
-              child: Text(
-                'MathMaster',
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
+              decoration: BoxDecoration(color: Colors.transparent),
+              child: Image.asset("assets/logo.png"),
             ),
+
             ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              iconColor: Colors.black,
+              textColor: Colors.black,
+              leading: const Icon(Icons.home_outlined),
+              title: Text('Home', style: GoogleFonts.inter()),
               onTap: () => _navigateFromDrawer(showHome: true),
             ),
             ListTile(
-              leading: const Icon(Icons.book),
-              title: const Text('Subjects'),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              iconColor: Colors.black,
+              textColor: Colors.black,
+              leading: const Icon(Icons.library_books_outlined),
+              title: Text('Subjects', style: GoogleFonts.inter()),
               onTap: () => _navigateFromDrawer(bottomNavIndex: 0),
             ),
             ListTile(
-              leading: const Icon(Icons.bar_chart),
-              title: const Text('Progress'),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              iconColor: Colors.black,
+              textColor: Colors.black,
+              leading: const Icon(Icons.trending_up_outlined),
+              title: Text('Progress', style: GoogleFonts.inter()),
               onTap: () => _navigateFromDrawer(bottomNavIndex: 1),
             ),
             ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Profile'),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              iconColor: Colors.black,
+              textColor: Colors.black,
+              leading: const Icon(Icons.account_circle_outlined),
+              title: Text('Profile', style: GoogleFonts.inter()),
               onTap: () => _navigateFromDrawer(bottomNavIndex: 2),
             ),
             ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              iconColor: Colors.black,
+              textColor: Colors.black,
+              leading: const Icon(Icons.settings_outlined),
+              title: Text('Settings', style: GoogleFonts.inter()),
               onTap: () => _navigateFromDrawer(showSettings: true),
+            ),
+            ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              iconColor: Colors.black,
+              textColor: Colors.black,
+              leading: const Icon(Icons.info_outlined),
+              title: Text('About', style: GoogleFonts.inter()),
+              onTap: () {},
+            ),
+            ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              iconColor: Colors.black,
+              textColor: Colors.black,
+              leading: const Icon(Icons.exit_to_app_outlined),
+              title: Text('Logout', style: GoogleFonts.inter()),
+              onTap: () => _navigateFromDrawer(bottomNavIndex: 2),
             ),
           ],
         ),
@@ -227,24 +268,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ? _settingsContent(context)
           : _pages[_selectedIndex],
 
-      bottomNavigationBar: SizedBox(
-        height: sizes?.bottomNavHeight ?? 72,
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-
-          selectedItemColor: _isInMainTabs ? Colors.black : Colors.white,
-          unselectedItemColor: Colors.white,
-
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.book), label: 'Subjects'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart),
-              label: 'Progress',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          ],
-        ),
+      bottomNavigationBar: MyBottomNavBar(
+        selectedIndex: _selectedIndex,
+        onTabChange: _onItemTapped,
       ),
     );
   }
@@ -267,73 +293,175 @@ class _HomeScreenState extends State<HomeScreen> {
           }),
           const SizedBox(height: 32),
           _buildButton(context, "Progress", const Color(0xFF395886), () {
-            print("Progress pressed");
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ProgressPage()),
+            );
           }),
         ],
       ),
     );
   }
 
-  // Subjects Page
+  // 🔥 SUBJECTS PAGE (REPLACE YOUR OLD ONE)
   Widget _subjectsContent(BuildContext context) {
-    return Center(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildButton(context, "Linear Algebra", const Color(0xFF395886), () {
-            // Navigate to the LessonsScreen
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LessonsScreen(
-                  lessons: linearAlgebraLessons, // your list of Lesson objects
-                ),
-              ),
-            );
-          }),
-          const SizedBox(height: 32),
-          _buildButton(
+          // 🔹 HEADER
+          Text(
+            "What would you like to learn today?",
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // 🔹 SUBJECT CARDS
+          _subjectCard(
             context,
-            "Integral Calculus",
-            const Color(0xFF395886),
-            () {
-              // Navigate to the LessonsScreen
+            title: "Linear Algebra",
+            subtitle: "Matrices, vectors, spaces",
+            color: const Color(0xFF6C8CD5),
+            iconPath: "assets/icons/linear.png",
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LessonsScreen(
-                    lessons:
-                        integralCalculusLessons, // your list of Lesson objects
-                  ),
+                  builder: (context) =>
+                      LessonsScreen(lessons: linearAlgebraLessons),
                 ),
               );
             },
           ),
-          const SizedBox(height: 32),
-          _buildButton(context, "Physics", const Color(0xFF395886), () {
-            // Navigate to the LessonsScreen
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LessonsScreen(
-                  lessons: physicsLessons, // your list of Lesson objects
+
+          _subjectCard(
+            context,
+            title: "Integral Calculus",
+            subtitle: "Integration, areas",
+            color: const Color(0xFF8E7DBE),
+            iconPath: "assets/icons/calculus.png",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      LessonsScreen(lessons: integralCalculusLessons),
                 ),
-              ),
-            );
-          }),
-          const SizedBox(height: 32),
-          _buildButton(context, "Chemistry", const Color(0xFF395886), () {
-            // Navigate to the LessonsScreen
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LessonsScreen(
-                  lessons: chemistryLessons, // your list of Lesson objects
+              );
+            },
+          ),
+
+          _subjectCard(
+            context,
+            title: "Physics",
+            subtitle: "Motion, energy, forces",
+            color: const Color(0xFF5DA399),
+            iconPath: "assets/icons/physics.png",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LessonsScreen(lessons: physicsLessons),
                 ),
-              ),
-            );
-          }),
+              );
+            },
+          ),
+
+          _subjectCard(
+            context,
+            title: "Chemistry",
+            subtitle: "Atoms, reactions",
+            color: const Color(0xFFE07A5F),
+            iconPath: "assets/icons/chemistry.png",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      LessonsScreen(lessons: chemistryLessons),
+                ),
+              );
+            },
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _subjectCard(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required Color color,
+    required String iconPath,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.85), // keeps your bg visible
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              // 🔹 ICON
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(iconPath),
+                ),
+              ),
+
+              const SizedBox(width: 16),
+
+              // 🔹 TEXT
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+
+              // 🔹 ARROW
+              const Icon(Icons.arrow_forward_ios_rounded, size: 18),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -475,7 +603,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // 🔹 Logout Button
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
-            child: ElevatedButton(
+            child: ElevatedButton.icon(
               onPressed: () async {
                 await LocalStorage.setLoggedIn(false);
                 Navigator.pushReplacement(
@@ -490,7 +618,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(6),
                 ),
               ),
-              child: Text(
+              icon: const Icon(Icons.exit_to_app_outlined, color: Colors.black),
+              label: Text(
                 "LOG OUT",
                 style: GoogleFonts.poppins(
                   color: Colors.black,
@@ -550,9 +679,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Shadow(
                   offset: const Offset(2, 2),
                   blurRadius: 4,
-                  color: Colors.black.withOpacity(
-                    0.3,
-                  ), // fixed: use withOpacity
+                  color: Colors.black.withValues(alpha: 0.3),
                 ),
               ],
             ),

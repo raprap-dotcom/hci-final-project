@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hci_final_project/login_wrapper.dart';
-import 'package:hci_final_project/theme/app_theme.dart';
 import 'package:hci_final_project/onboardingscreen.dart';
 import 'package:hci_final_project/progress_page.dart';
 import 'homepage.dart';
@@ -15,9 +13,7 @@ void main() async {
 }
 
 class MainApp extends StatelessWidget {
-  final bool startLoggedIn;
-
-  const MainApp({super.key, required this.startLoggedIn});
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {

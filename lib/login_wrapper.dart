@@ -1,6 +1,7 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hci_final_project/homepage.dart';
+import 'package:hci_final_project/screens/createaccountscreen.dart';
 import 'local_storage.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -24,12 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Load saved username/password
   void _loadSavedCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
     String? savedUsername = await LocalStorage.getLoginUsername();
     String? savedPassword = await LocalStorage.getLoginPassword();
 
-    if (savedUsername != null) _usernameController.text = savedUsername;
-    if (savedPassword != null) _passwordController.text = savedPassword;
+    _usernameController.text = savedUsername;
+    _passwordController.text = savedPassword;
 
     setState(() {
       _loading = false;
@@ -87,13 +87,13 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Image.asset('assets/logo.png', height: 80),
                 const SizedBox(height: 10),
-                const Text(
+                Text(
                   "MATHMASTER",
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,
-                    shadows: [
+                    shadows: const [
                       Shadow(
                         blurRadius: 4,
                         offset: Offset(2, 2),
@@ -103,12 +103,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   "Log In",
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF3E5C8A),
+                    color: const Color(0xFF3E5C8A),
                   ),
                 ),
                 const Divider(thickness: 2, color: Color(0xFF3E5C8A)),
@@ -132,27 +132,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       _errorMessage,
-                      style: const TextStyle(color: Colors.red),
+                      style: GoogleFonts.inter(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
 
                 const SizedBox(height: 25),
                 SizedBox(
-                  width: double.infinity,
+                  width: 160,
                   child: ElevatedButton(
                     onPressed: _login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF3E5C8A),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       "LOG IN",
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         letterSpacing: 1,
+                        fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
                     ),
@@ -166,18 +170,29 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         print("Forgot password");
                       },
-                      child: const Text(
+                      child: Text(
                         "Forgot Password?",
-                        style: TextStyle(color: Colors.brown),
+                        style: GoogleFonts.inter(
+                          color: Colors.brown,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                     TextButton(
                       onPressed: () {
-                        print("Create account");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CreateAccountScreen(),
+                          ),
+                        );
                       },
-                      child: const Text(
+                      child: Text(
                         "Create an account",
-                        style: TextStyle(color: Colors.red),
+                        style: GoogleFonts.inter(
+                          color: Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -195,9 +210,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Continue as Guest",
-                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -215,22 +234,28 @@ class _LoginScreenState extends State<LoginScreen> {
     bool obscure = false,
     TextEditingController? controller,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white70,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(2, 3)),
-        ],
-      ),
-      child: TextField(
-        controller: controller,
-        obscureText: obscure,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon),
-          hintText: hint,
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 15),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white70,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: const [
+            BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(2, 3)),
+          ],
+        ),
+        child: TextField(
+          controller: controller,
+          obscureText: obscure,
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon),
+            hintText: hint,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
+          ),
         ),
       ),
     );

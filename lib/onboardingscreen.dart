@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hci_final_project/login_wrapper.dart';
-import 'homepage.dart';
 
 // ==========================================
 // 1. DATA (THE CONTENT OF YOUR SCREENS)
@@ -21,16 +21,21 @@ class OnboardingContent {
 // Make sure these file names match the actual .png files in your assets/onboardingscreen/ folder.
 List<OnboardingContent> contents = [
   OnboardingContent(
+    title: 'Welcome!',
+    description: 'Math just met its match. Learn math the smart way.',
+    imagePath: 'assets/onboardingscreen/welcome.png',
+  ),
+  OnboardingContent(
     title: 'Explore Multiple Subjects',
     description:
         'Go beyond basic math. Master Linear Algebra, Integral Calculus, Physics, and Chemistry all in one place.',
-    imagePath: 'assets/onboardingscreen/subjects.png',
+    imagePath: 'assets/onboardingscreen/subject.png',
   ),
   OnboardingContent(
     title: 'Challenge Your Skills',
     description:
         'Test your knowledge with curated quizzes tailored to your skill level, from Easy to Hard.',
-    imagePath: 'assets/onboardingscreen/quiz.png',
+    imagePath: 'assets/onboardingscreen/exam.png',
   ),
   OnboardingContent(
     title: 'Earn Epic Badges',
@@ -42,13 +47,13 @@ List<OnboardingContent> contents = [
     title: 'Track Your Growth',
     description:
         'Monitor your quiz scores, see your completion rates, and watch your mastery grow over time.',
-    imagePath: 'assets/onboardingscreen/progress.png',
+    imagePath: 'assets/onboardingscreen/track.png',
   ),
   OnboardingContent(
     title: 'Study Your Way',
     description:
         'Create an account to save your milestones across devices, or dive right in as a guest to start learning immediately.',
-    imagePath: 'assets/onboardingscreen/start.png',
+    imagePath: 'assets/onboardingscreen/maths.png',
   ),
 ];
 
@@ -140,7 +145,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Text(
                           contents[i].title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -152,7 +157,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Text(
                           contents[i].description,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: GoogleFonts.inter(
                             fontSize: 16,
                             color: Colors.black54,
                           ),

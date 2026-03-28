@@ -32,19 +32,14 @@ class _ProgressPageState extends State<ProgressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFBFC7D1),
-
-      appBar: AppBar(
-        title: const Text("Progress"),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF395886),
-        foregroundColor: Colors.white,
-      ),
+      backgroundColor: const Color(0xFFE1ECF6),
 
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
           child: Column(
             children: [
               ...progressData.entries.toList().asMap().entries.map((entry) {
@@ -74,6 +69,7 @@ class _ProgressPageState extends State<ProgressPage> {
                 ),
                 child: const Text("Reset Progress"),
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -110,7 +106,7 @@ class _ProgressPageState extends State<ProgressPage> {
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: const Color(0xFFD3D9E2),
+        color: const Color.fromARGB(255, 255, 255, 255),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -142,13 +138,20 @@ class _ProgressPageState extends State<ProgressPage> {
             curve: Curves.easeOutCubic,
             builder: (context, value, _) {
               Color barColor;
+              String statusText;
 
               if (value < 0.3) {
-                barColor = Colors.redAccent;
-              } else if (value < 0.7) {
-                barColor = Colors.orange;
+                barColor = const Color(0xFFEF5350);
+                statusText = "Starting";
+              } else if (value < 0.5) {
+                barColor = const Color(0xFFFFA726);
+                statusText = "In Progress";
+              } else if (value < 0.8) {
+                barColor = const Color(0xFFFFEE58);
+                statusText = "Good Progress";
               } else {
-                barColor = Colors.green;
+                barColor = const Color(0xFF66BB6A);
+                statusText = "Excellent";
               }
 
               return Column(
@@ -157,15 +160,51 @@ class _ProgressPageState extends State<ProgressPage> {
                     borderRadius: BorderRadius.circular(12),
                     child: LinearProgressIndicator(
                       value: value,
-                      minHeight: 10,
+                      minHeight: 12,
                       backgroundColor: Colors.grey[300],
                       color: barColor,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    "${(value * 100).toStringAsFixed(0)}%",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${(value * 100).toStringAsFixed(1)}%",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            statusText,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: barColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: barColor,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: barColor.withOpacity(0.5),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               );

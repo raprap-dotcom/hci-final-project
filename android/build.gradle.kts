@@ -1,6 +1,11 @@
 allprojects {
     repositories {
-        google()
+        google() {
+            metadataSources {
+                mavenPom()
+                ignoreGradleMetadataRedirection()
+            }
+        }
         mavenCentral()
     }
 }
