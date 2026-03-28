@@ -32,14 +32,7 @@ class _ProgressPageState extends State<ProgressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFBFC7D1),
-
-      appBar: AppBar(
-        title: const Text("Progress"),
-        centerTitle: true,
-        backgroundColor: const Color(0xFF395886),
-        foregroundColor: Colors.white,
-      ),
+      backgroundColor: const Color(0xFFE1ECF6),
 
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -113,7 +106,7 @@ class _ProgressPageState extends State<ProgressPage> {
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: const Color(0xFFD3D9E2),
+        color: const Color.fromARGB(255, 255, 255, 255),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
