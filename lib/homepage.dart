@@ -79,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onItemTapped(int index) {
     setState(() {
-      print("Bottom Nav: $index");
       _selectedIndex = index;
       _showHomeContent = false;
       _showSettingsContent = false;
@@ -280,7 +279,13 @@ class _HomeScreenState extends State<HomeScreen> {
               textColor: Colors.black,
               leading: const Icon(Icons.exit_to_app_outlined),
               title: Text('Logout', style: GoogleFonts.inter()),
-              onTap: () => _navigateFromDrawer(bottomNavIndex: 2),
+              onTap: () async {
+                await LocalStorage.setLoggedIn(false);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              },
             ),
           ],
         ),

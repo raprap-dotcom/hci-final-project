@@ -113,7 +113,7 @@ class ProfilePage extends StatelessWidget {
 
           // 🔹 Logout Button
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: 80),
             child: ElevatedButton(
               onPressed: onLogout,
               style: ElevatedButton.styleFrom(
