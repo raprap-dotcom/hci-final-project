@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hci_final_project/local_storage.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({Key? key}) : super(key: key);
@@ -16,6 +17,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final _ageController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -29,6 +31,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     _middleInitialController.dispose();
     _ageController.dispose();
     _phoneController.dispose();
+    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -37,10 +40,17 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
   void _createAccount() {
     if (_formKey.currentState!.validate()) {
-      // Handle account creation
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created successfully!')),
-      );
+      final username = _usernameController.text.trim();
+      final password = _passwordController.text.trim();
+
+      // Prevent empty strings
+      if (username.isEmpty || password.isEmpty) return;
+
+      LocalStorage.createAccount(username, password).then((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account created successfully!')),
+        );
+      });
     }
   }
 
@@ -183,6 +193,29 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   }
                   if (!RegExp(r'^[a-zA-Z0-9._%-]+$').hasMatch(value)) {
                     return 'Invalid email format';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Username
+              TextFormField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  hintText: 'Choose a username',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  prefixIcon: const Icon(Icons.person_outline),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Username is required';
+                  }
+                  if (value.length < 4) {
+                    return 'Username must be at least 4 characters';
                   }
                   return null;
                 },
