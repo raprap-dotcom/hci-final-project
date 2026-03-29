@@ -38,7 +38,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _showResults() {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) =>
@@ -135,37 +135,61 @@ class QuizResultsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Results")),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: problems.length,
-        itemBuilder: (context, index) {
-          final problem = problems[index];
-          final userAnswer = answers[index] ?? "No answer";
-          final correct = userAnswer == problem.answer;
+      body: Column(
+        children: [
+          // 🔹 LIST
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: problems.length,
+              itemBuilder: (context, index) {
+                final problem = problems[index];
+                final userAnswer = answers[index] ?? "No answer";
+                final correct = userAnswer == problem.answer;
 
-          return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Q${index + 1}: ${problem.question}",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Q${index + 1}: ${problem.question}",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text("Your answer: $userAnswer"),
+                        Text("Correct answer: ${problem.answer}"),
+                        Text(
+                          "Result: ${correct ? '✅ Correct' : '❌ Incorrect'}",
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text("Your answer: $userAnswer"),
-                  Text("Correct answer: ${problem.answer}"),
-                  Text("Result: ${correct ? '✅ Correct' : '❌ Incorrect'}"),
-                ],
+                );
+              },
+            ),
+          ),
+
+          // 🔹 BUTTON (ALWAYS AT BOTTOM)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Results → LessonDetail
+                  Navigator.pop(context); // LessonDetail → LessonsScreen
+                },
+                child: const Text("Back to Lessons"),
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
