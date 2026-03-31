@@ -23,13 +23,16 @@ class _LoginScreenState extends State<LoginScreen> {
     _loadSavedCredentials();
   }
 
-  // Load saved username/password
-  void _loadSavedCredentials() async {
-    String? savedUsername = await LocalStorage.getLoginUsername();
-    String? savedPassword = await LocalStorage.getLoginPassword();
+  Future<void> _loadSavedCredentials() async {
+    // Fetch all accounts
+    List<Map<String, dynamic>> accounts = await LocalStorage.getAccounts();
 
-    _usernameController.text = savedUsername;
-    _passwordController.text = savedPassword;
+    // Auto-fill last created account if exists
+    if (accounts.isNotEmpty) {
+      final lastAccount = accounts.last;
+      _usernameController.text = lastAccount['username'] ?? '';
+      _passwordController.text = lastAccount['password'] ?? '';
+    }
 
     setState(() {
       _loading = false;
@@ -48,6 +51,21 @@ class _LoginScreenState extends State<LoginScreen> {
     String password = _passwordController.text.trim();
 
     bool success = await LocalStorage.login(username, password);
+
+    // Allow admin login
+    if (!success && username == 'admin' && password == 'admin') {
+      success = true;
+      await LocalStorage.setLoggedIn(true);
+
+      // Print all accounts in storage
+      List<Map<String, dynamic>> accounts = await LocalStorage.getAccounts();
+      print("===== ALL ACCOUNTS IN STORAGE =====");
+      for (var account in accounts) {
+        print(account);
+      }
+      print("==================================");
+    }
+
     if (success) {
       Navigator.pushReplacement(
         context,
@@ -241,7 +259,11 @@ class _LoginScreenState extends State<LoginScreen> {
           color: Colors.white70,
           borderRadius: BorderRadius.circular(10),
           boxShadow: const [
-            BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(2, 3)),
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 5,
+              offset: Offset(2, 3),
+            ),
           ],
         ),
         child: TextField(

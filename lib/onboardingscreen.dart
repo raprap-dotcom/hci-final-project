@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hci_final_project/login_wrapper.dart';
+import 'package:hci_final_project/local_storage.dart';
 
 // ==========================================
 // 1. DATA (THE CONTENT OF YOUR SCREENS)
@@ -199,8 +200,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                   // The main Call to Action button (NEXT / START)
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (currentIndex == contents.length - 1) {
+                        await LocalStorage.setHasSeenOnboarding(true);
+                        if (!mounted) return;
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
