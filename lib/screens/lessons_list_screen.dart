@@ -61,7 +61,7 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
 
                     Text(
                       section.content,
-                      style: GoogleFonts.inter(fontSize: 16),
+                      style: GoogleFonts.inter(fontSize: 14),
                     ),
 
                     if (section.message != null) ...[
@@ -183,17 +183,20 @@ class LessonsScreen extends StatelessWidget {
                       height: 50,
                       fit: BoxFit.cover,
                     )
-                  : null,
+                  : const Icon(
+                      Icons.menu_book_rounded,
+                      size: 32,
+                    ),
               title: Text(
                 lesson.title,
                 style: GoogleFonts.poppins(
-                  fontSize: 22,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               subtitle: Text(
                 lesson.description,
-                style: GoogleFonts.poppins(fontSize: 16),
+                style: GoogleFonts.poppins(fontSize: 12),
               ),
               trailing: const Icon(Icons.arrow_forward),
               onTap: () {

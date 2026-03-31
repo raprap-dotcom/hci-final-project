@@ -40,7 +40,10 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     const Text(
                       "Yamato",
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
                     ),
 
                     const SizedBox(height: 8),
@@ -118,9 +121,9 @@ class ProfilePage extends StatelessWidget {
               onPressed: onLogout,
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(220, 50),
-                backgroundColor: const Color(0xFF8AAEE0),
+                backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(14),
                 ),
               ),
               child: Text(
