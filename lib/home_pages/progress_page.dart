@@ -154,7 +154,9 @@ class _ProgressPageState extends State<ProgressPage> {
         margin: const EdgeInsets.only(bottom: 20),
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
-          color: cardColor,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Theme.of(context).colorScheme.surfaceVariant
+                : cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -173,7 +175,10 @@ class _ProgressPageState extends State<ProgressPage> {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.6),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surface
+                          .withOpacity(0.6),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Padding(
@@ -185,9 +190,10 @@ class _ProgressPageState extends State<ProgressPage> {
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -196,7 +202,12 @@ class _ProgressPageState extends State<ProgressPage> {
 
             const SizedBox(height: 8),
 
-            Text("Quizzes Taken: $quizzes"),
+            Text(
+              "Quizzes Taken: $quizzes",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
 
             const SizedBox(height: 12),
 
@@ -224,14 +235,18 @@ class _ProgressPageState extends State<ProgressPage> {
                       child: LinearProgressIndicator(
                         value: value,
                         minHeight: 10,
-                        backgroundColor: Colors.grey[300],
+                        backgroundColor:
+                            Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
                         color: barColor,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       "${(value * 100).toStringAsFixed(0)}%",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 );

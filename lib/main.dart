@@ -20,34 +20,42 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
-      home: FutureBuilder<Map<String, bool>>(
-        future: _loadStartupState(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            // Show loading spinner while checking storage
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeController,
+      builder: (context, mode, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: buildAppTheme(),
+          darkTheme: buildDarkTheme(),
+          themeMode: mode,
+          home: FutureBuilder<Map<String, bool>>(
+            future: _loadStartupState(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                // Show loading spinner while checking storage
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
 
-          final startupState = snapshot.data!;
-          final hasSeenOnboarding = startupState['hasSeenOnboarding'] ?? false;
-          final loggedIn = startupState['loggedIn'] ?? false;
+              final startupState = snapshot.data!;
+              final hasSeenOnboarding =
+                  startupState['hasSeenOnboarding'] ?? false;
+              final loggedIn = startupState['loggedIn'] ?? false;
 
-          if (!hasSeenOnboarding) {
-            return const OnboardingScreen();
-          }
+              if (!hasSeenOnboarding) {
+                return const OnboardingScreen();
+              }
 
-          return loggedIn ? const HomeScreen() : const LoginScreen();
-        },
-      ),
-      routes: {
-        '/onboarding': (context) => const OnboardingScreen(),
-        // '/login': (context) => const LoginWrapper(),
-        // '/dragdrop': (context) => const DragAndDropTest(),
+              return loggedIn ? const HomeScreen() : const LoginScreen();
+            },
+          ),
+          routes: {
+            '/onboarding': (context) => const OnboardingScreen(),
+            // '/login': (context) => const LoginWrapper(),
+            // '/dragdrop': (context) => const DragAndDropTest(),
+          },
+        );
       },
     );
   }

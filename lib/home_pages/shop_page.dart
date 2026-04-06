@@ -111,12 +111,19 @@ class _ShopPageState extends State<ShopPage> {
       children: [
         Text(
           'Avatar Shop',
-          style: GoogleFonts.poppins(fontSize: 28, fontWeight: FontWeight.w700),
+          style: GoogleFonts.poppins(
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
         const SizedBox(height: 6),
         Text(
           'Spend coins earned from quests to unlock avatars.',
-          style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          ),
         ),
         const SizedBox(height: 12),
         Row(
@@ -131,13 +138,18 @@ class _ShopPageState extends State<ShopPage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF4D6),
+              color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFFFCC66)),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
             child: Text(
               'Login required: guest accounts cannot purchase or equip locked avatars.',
-              style: GoogleFonts.poppins(fontSize: 12),
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ),
         ],
@@ -151,12 +163,16 @@ class _ShopPageState extends State<ShopPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         text,
-        style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600),
+        style: GoogleFonts.poppins(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
     );
   }
@@ -181,9 +197,18 @@ class _ShopPageState extends State<ShopPage> {
         leading: CircleAvatar(backgroundImage: AssetImage(item.assetPath)),
         title: Text(
           item.name,
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
-        subtitle: Text(subtitle, style: GoogleFonts.poppins(fontSize: 12)),
+        subtitle: Text(
+          subtitle,
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+          ),
+        ),
         trailing: isUnlocked
             ? ElevatedButton(
                 onPressed: isEquipped ? null : () => _equipAvatar(index),

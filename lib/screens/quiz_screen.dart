@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hci_final_project/theme/app_theme.dart';
 import '../models/quiz_problem.dart';
 import '../progress_manager.dart';
 import '../quest_manager.dart';
@@ -65,6 +66,11 @@ class _QuizScreenState extends State<QuizScreen> {
     final problem = widget.problems[currentIndex];
     final userAnswer = answers[currentIndex];
     final themeColor = widget.themeColor;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Theme.of(context).colorScheme.primary;
+    final buttonBackground = isDark ? primary : (themeColor ?? primary);
+    final buttonForeground =
+        isDark ? Colors.white : Theme.of(context).colorScheme.onPrimary;
 
     Widget questionWidget;
 
@@ -108,6 +114,7 @@ class _QuizScreenState extends State<QuizScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Quiz (${currentIndex + 1}/${widget.problems.length})"),
+        actions: const [ThemeToggleButton()],
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -129,16 +136,16 @@ class _QuizScreenState extends State<QuizScreen> {
                 ElevatedButton(
                   onPressed: currentIndex > 0 ? _previousQuestion : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: themeColor,
-                    foregroundColor: Colors.black87,
+                    backgroundColor: buttonBackground,
+                    foregroundColor: buttonForeground,
                   ),
                   child: const Text("Previous"),
                 ),
                 ElevatedButton(
                   onPressed: _nextQuestion,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: themeColor,
-                    foregroundColor: Colors.black87,
+                    backgroundColor: buttonBackground,
+                    foregroundColor: buttonForeground,
                   ),
                   child: Text(isLastQuestion ? "Finish" : "Next"),
                 ),
@@ -221,8 +228,18 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Theme.of(context).colorScheme.primary;
+    final buttonBackground =
+        isDark ? primary : (widget.themeColor ?? primary);
+    final buttonForeground =
+        isDark ? Colors.white : Theme.of(context).colorScheme.onPrimary;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Results")),
+      appBar: AppBar(
+        title: const Text("Results"),
+        actions: const [ThemeToggleButton()],
+      ),
       body: Column(
         children: [
           if (_rewardResult?.hasRewards == true)
@@ -231,13 +248,19 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
               margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.12),
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceVariant
+                    .withOpacity(0.4),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 'Daily quest rewards collected: '
                 '+${_rewardResult!.totalExpReward} EXP, '
                 '+${_rewardResult!.totalCoinReward} coins',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
             ),
 
@@ -260,16 +283,39 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
                       children: [
                         Text(
                           "Q${index + 1}: ${problem.question}",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 6),
-                        Text("Your answer: $userAnswer"),
-                        Text("Correct answer: ${problem.answer}"),
+                        Text(
+                          "Your answer: $userAnswer",
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.8),
+                          ),
+                        ),
+                        Text(
+                          "Correct answer: ${problem.answer}",
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.8),
+                          ),
+                        ),
                         Text(
                           "Result: ${correct ? '✅ Correct' : '❌ Incorrect'}",
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.9),
+                          ),
                         ),
                       ],
                     ),
@@ -290,8 +336,8 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
                   Navigator.pop(context); // LessonDetail → LessonsScreen
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: widget.themeColor,
-                  foregroundColor: Colors.black87,
+                  backgroundColor: buttonBackground,
+                  foregroundColor: buttonForeground,
                 ),
                 child: const Text("Back to Lessons"),
               ),

@@ -138,14 +138,20 @@ class _DragDropQuestionState extends State<DragDropQuestion> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: candidateData.isEmpty
-                          ? Colors.grey[200]
+                          ? Theme.of(context).colorScheme.surfaceVariant
                           : Colors.yellow[200],
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.black, width: 2),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        width: 2,
+                      ),
                     ),
                     child: Text(
                       slotValue ?? 'Drop #${index + 1}',
-                      style: const TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                 );
@@ -154,9 +160,12 @@ class _DragDropQuestionState extends State<DragDropQuestion> {
           }),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Tip: tap a filled box to clear it.',
-          style: TextStyle(fontSize: 12, color: Colors.black54),
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          ),
         ),
       ],
     );

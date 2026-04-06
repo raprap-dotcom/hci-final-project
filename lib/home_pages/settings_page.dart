@@ -35,8 +35,11 @@ class SettingsPage extends StatelessWidget {
       child: OutlinedButton(
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
-          foregroundColor: const Color(0xFF395886),
-          side: BorderSide(color: color, width: 2),
+          foregroundColor: Theme.of(context).colorScheme.primary,
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          ),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         ),
         child: Center(
@@ -49,7 +52,8 @@ class SettingsPage extends StatelessWidget {
                 Shadow(
                   offset: const Offset(2, 2),
                   blurRadius: 4,
-                  color: Colors.black.withValues(alpha: 0.3),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                 ),
               ],
             ),

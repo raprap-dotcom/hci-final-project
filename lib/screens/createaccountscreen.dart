@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -84,7 +86,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         width: double.infinity,
         height: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-        decoration: const BoxDecoration(color: Color(0xFFBFC7D1)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+        ),
         child: Center(
           child: ScrollConfiguration(
             behavior: ScrollConfiguration.of(
@@ -105,6 +109,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.5,
+                        color: Theme.of(context).colorScheme.onSurface,
                         shadows: const [
                           Shadow(
                             blurRadius: 4,
@@ -121,7 +126,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF3E5C8A),
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -130,7 +135,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: Colors.black54,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.6),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -264,23 +272,13 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    ElevatedButton(
+                    _hoverButton(
+                      label: 'Create Account',
                       onPressed: _createAccount,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3E5C8A),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        'Create Account',
-                        style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
+                      baseColor: const Color(0xFF3E5C8A),
+                      hoverColor: const Color(0xFF2F4A74),
+                      textColor: Colors.white,
+                      hoverTextColor: Colors.white,
                     ),
                     const SizedBox(height: 18),
                     Row(
@@ -294,7 +292,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black54,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -304,26 +305,14 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: _guestLogin,
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFF395886)),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          "Continue as Guest",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
+                    _hoverButton(
+                      label: "Continue as Guest",
+                      onPressed: _guestLogin,
+                      baseColor: Colors.white,
+                      hoverColor: const Color(0xFFE2E6EC),
+                      textColor: const Color(0xFF1B2B45),
+                      hoverTextColor: const Color(0xFF1B2B45),
+                      borderColor: const Color(0xFF395886),
                     ),
                     const SizedBox(height: 18),
                     Row(
@@ -333,7 +322,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           "Already have an account? ",
                           style: GoogleFonts.inter(
                             fontSize: 12,
-                            color: Colors.black54,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
                           ),
                         ),
                         TextButton(
@@ -341,7 +333,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           child: Text(
                             "Login",
                             style: GoogleFonts.inter(
-                              color: Colors.red,
+                              color: const Color(0xFFD14B4B),
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
@@ -368,23 +360,127 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     return InputDecoration(
       hintText: hint,
       suffixText: suffixText,
-      prefixIcon: Icon(icon),
+      prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.onSurface),
       suffixIcon: suffixIcon,
       border: InputBorder.none,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      hintStyle: GoogleFonts.inter(color: Colors.black45),
+      hintStyle: GoogleFonts.inter(
+        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.55),
+      ),
     );
   }
 
   Widget _fieldWrapper(Widget child) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.45),
-          borderRadius: BorderRadius.circular(10),
-        ),
+      child: _glassCard(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         child: child,
+      ),
+    );
+  }
+
+  Widget _hoverButton({
+    required String label,
+    required VoidCallback onPressed,
+    required Color baseColor,
+    required Color hoverColor,
+    required Color textColor,
+    required Color hoverTextColor,
+    Color? borderColor,
+  }) {
+    bool isHovered = false;
+    final buttonBorder = borderColor ?? baseColor;
+    return SizedBox(
+      width: double.infinity,
+      child: StatefulBuilder(
+        builder: (context, setInnerState) {
+          return MouseRegion(
+            onEnter: (_) => setInnerState(() => isHovered = true),
+            onExit: (_) => setInnerState(() => isHovered = false),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 160),
+              curve: Curves.easeOut,
+              decoration: BoxDecoration(
+                color: isHovered ? hoverColor : baseColor,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: buttonBorder, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(isHovered ? 0.2 : 0.12),
+                    blurRadius: isHovered ? 18 : 12,
+                    offset: Offset(0, isHovered ? 10 : 6),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: onPressed,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Center(
+                      child: Text(
+                        label,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          letterSpacing: 0.4,
+                          fontWeight: FontWeight.w600,
+                          color: isHovered ? hoverTextColor : textColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _glassCard({
+    required Widget child,
+    EdgeInsets? padding,
+    Color? tintColor,
+    Color? borderColor,
+    bool hovered = false,
+  }) {
+    const borderRadius = BorderRadius.all(Radius.circular(16));
+    final baseTint = tintColor ?? Colors.white;
+    final baseBorder = borderColor ?? Colors.white;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 160),
+      curve: Curves.easeOut,
+      transform: Matrix4.translationValues(0, hovered ? -2 : 0, 0),
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(hovered ? 0.18 : 0.12),
+            blurRadius: hovered ? 22 : 18,
+            offset: Offset(0, hovered ? 12 : 10),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            padding: padding,
+            decoration: BoxDecoration(
+              color: baseTint.withOpacity(hovered ? 0.28 : 0.22),
+              border: Border.all(
+                color: baseBorder.withOpacity(hovered ? 0.7 : 0.45),
+                width: 1,
+              ),
+            ),
+            child: child,
+          ),
+        ),
       ),
     );
   }

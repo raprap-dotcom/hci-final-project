@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hci_final_project/theme/app_theme.dart';
 import '../models/lesson.dart';
 import 'quiz_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class LessonDetailScreen extends StatefulWidget {
   final Lesson lesson;
@@ -33,12 +34,22 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
     final section = widget.lesson.sections[currentIndex];
     final isLast = currentIndex == widget.lesson.sections.length - 1;
     final themeColor = widget.themeColor;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Theme.of(context).colorScheme.primary;
+    final buttonBackground = isDark ? primary : (themeColor ?? primary);
+    final buttonForeground =
+      isDark ? Colors.white : Theme.of(context).colorScheme.onPrimary;
+    final outlineForeground =
+      isDark ? Colors.white : Theme.of(context).colorScheme.onSurface;
+    final outlineSideColor =
+      isDark ? Colors.white : (themeColor ?? outlineForeground);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "${widget.lesson.title} (${currentIndex + 1}/${widget.lesson.sections.length})",
         ),
+        actions: const [ThemeToggleButton()],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -61,7 +72,10 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
 
                     Text(
                       section.content,
-                      style: GoogleFonts.inter(fontSize: 14),
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
 
                     if (section.message != null) ...[
@@ -74,7 +88,10 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                         ),
                         child: Text(
                           section.message!,
-                          style: GoogleFonts.inter(fontStyle: FontStyle.italic),
+                          style: GoogleFonts.inter(
+                            fontStyle: FontStyle.italic,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ),
                     ],
@@ -93,16 +110,16 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                   ElevatedButton(
                     onPressed: currentIndex > 0 ? _previousSection : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: themeColor,
-                      foregroundColor: Colors.black87,
+                      backgroundColor: buttonBackground,
+                      foregroundColor: buttonForeground,
                     ),
                     child: const Text("Previous"),
                   ),
                   ElevatedButton(
                     onPressed: _nextSection,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: themeColor,
-                      foregroundColor: Colors.black87,
+                      backgroundColor: buttonBackground,
+                      foregroundColor: buttonForeground,
                     ),
                     child: const Text("Next"),
                   ),
@@ -128,8 +145,8 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: themeColor,
-                          foregroundColor: Colors.black87,
+                          backgroundColor: buttonBackground,
+                          foregroundColor: buttonForeground,
                         ),
                         child: const Text("Take Quiz"),
                       ),
@@ -142,8 +159,10 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                         Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.black87,
-                        side: BorderSide(color: themeColor ?? Colors.black54),
+                          foregroundColor: outlineForeground,
+                        side: BorderSide(
+                            color: outlineSideColor,
+                        ),
                       ),
                       child: const Text("Back to Lessons"),
                     ),
@@ -166,7 +185,10 @@ class LessonsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Lessons")),
+      appBar: AppBar(
+        title: const Text("Lessons"),
+        actions: const [ThemeToggleButton()],
+      ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: lessons.length,
@@ -175,7 +197,9 @@ class LessonsScreen extends StatelessWidget {
 
           return Card(
             margin: const EdgeInsets.only(bottom: 12),
-            color: themeColor,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Theme.of(context).colorScheme.surfaceVariant
+                : themeColor,
             child: ListTile(
               leading: lesson.imagePath != null
                   ? Image.asset(
@@ -190,13 +214,20 @@ class LessonsScreen extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               subtitle: Text(
                 lesson.description,
-                style: GoogleFonts.poppins(fontSize: 12),
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                ),
               ),
-              trailing: const Icon(Icons.arrow_forward),
+              trailing: Icon(
+                Icons.arrow_forward,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              ),
               onTap: () {
                 Navigator.push(
                   context,

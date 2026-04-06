@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hci_final_project/login_wrapper.dart';
+import 'package:hci_final_project/theme/app_theme.dart';
 import 'package:hci_final_project/widgets/bottom_nav_bar.dart';
 import 'local_storage.dart';
 import 'package:hci_final_project/home_pages/profile_page.dart';
@@ -12,6 +13,7 @@ import 'package:hci_final_project/home_pages/progress_page.dart';
 import 'package:hci_final_project/home_pages/settings_page.dart';
 import 'package:hci_final_project/home_pages/quests_page.dart';
 import 'package:hci_final_project/home_pages/shop_page.dart';
+import 'package:hci_final_project/home_pages/about_page.dart';
 import 'package:hci_final_project/data/avatar_catalog.dart';
 import 'package:hci_final_project/progress_manager.dart';
 
@@ -68,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showHomeContent = true;
   bool _showSettingsContent = false;
   bool _showShopContent = false;
+  bool _showAboutContent = false;
 
   int _selectedAvatar = 0;
   int animationKey = 0;
@@ -109,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _showHomeContent = false;
       _showSettingsContent = false;
       _showShopContent = false;
+      _showAboutContent = false;
     });
   }
 
@@ -117,14 +121,16 @@ class _HomeScreenState extends State<HomeScreen> {
     bool showHome = false,
     bool showSettings = false,
     bool showShop = false,
+    bool showAbout = false,
   }) {
     setState(() {
       _showHomeContent = showHome;
       _showSettingsContent = showSettings;
       _showShopContent = showShop;
+      _showAboutContent = showAbout;
       if (bottomNavIndex != null) {
         _selectedIndex = bottomNavIndex;
-      } else if (showHome || showSettings || showShop) {
+      } else if (showHome || showSettings || showShop || showAbout) {
         _selectedIndex = 0;
       }
     });
@@ -355,16 +361,17 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: const Color(0xFF395886),
-        title: Text(
-          "MathMaster",
-          style: GoogleFonts.poppins(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+          centerTitle: true,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "MathMaster",
+            style: GoogleFonts.poppins(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
-        ),
+          actions: const [ThemeToggleButton()],
       ),
 
       drawer: Drawer(
@@ -418,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildDrawerItem(
                     icon: Icons.info_outlined,
                     label: "About",
-                    onTap: () {},
+                    onTap: () => _navigateFromDrawer(showAbout: true),
                   ),
                   _buildDrawerItem(
                     icon: Icons.exit_to_app_outlined,
@@ -441,6 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _showHomeContent = false;
                   _showSettingsContent = false;
                   _showShopContent = false;
+                  _showAboutContent = false;
                   _selectedIndex = 2; // Subjects index
                 });
               },
@@ -453,6 +461,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
             )
+          : _showAboutContent
+          ? const AboutPage()
           : _pages[_selectedIndex],
 
       bottomNavigationBar: MyBottomNavBar(
@@ -486,12 +496,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: GoogleFonts.poppins(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 'Here is your learning snapshot.',
-                style: GoogleFonts.poppins(fontSize: 15, color: Colors.black54),
+                style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withOpacity(0.6),
+                ),
               ),
               const SizedBox(height: 18),
               _buildPerformanceCard(subjects),
@@ -532,7 +549,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F7FC),
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -543,6 +560,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
@@ -578,7 +596,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: Text(
                       subject.subjectTitle,
-                      style: GoogleFonts.poppins(fontSize: 13),
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   Text(
@@ -586,6 +607,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -602,7 +624,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFEAF4EE),
+        color: Theme.of(context).colorScheme.surfaceVariant,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -613,13 +635,17 @@ class _HomeScreenState extends State<HomeScreen> {
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
           if (recentQuiz == null)
             Text(
               'No completed quizzes yet.',
-              style: GoogleFonts.poppins(fontSize: 13),
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             )
           else ...[
             Text(
@@ -627,12 +653,19 @@ class _HomeScreenState extends State<HomeScreen> {
               style: GoogleFonts.poppins(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               '${recentQuiz.subjectTitle} • ${recentQuiz.correctAnswers}/${recentQuiz.totalQuestions} • ${recentQuiz.percentage}%',
-              style: GoogleFonts.poppins(fontSize: 13),
+              style: GoogleFonts.poppins(
+                fontSize: 13,
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withOpacity(0.7),
+              ),
             ),
           ],
         ],
@@ -652,20 +685,26 @@ class _HomeScreenState extends State<HomeScreen> {
     required String label,
     required VoidCallback onTap,
   }) {
+    const drawerTextColor = Color(0xFF1F232B);
+    const drawerIconColor = Color(0xFF395886);
+    final hoverColor = drawerTextColor.withOpacity(0.12);
+    final splashColor = drawerTextColor.withOpacity(0.16);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),
-        hoverColor: Colors.white.withOpacity(0.22),
-        splashColor: Colors.white.withOpacity(0.18),
+        hoverColor: hoverColor,
+        splashColor: splashColor,
         child: ListTile(
-          leading: Icon(icon, color: const Color(0xFF395886)),
+          leading: Icon(icon, color: drawerIconColor),
           title: Text(
             label,
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.w500,
+              color: drawerTextColor,
             ),
           ),
         ),

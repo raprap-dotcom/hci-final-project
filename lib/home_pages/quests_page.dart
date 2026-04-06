@@ -101,12 +101,16 @@ class _QuestsPageState extends State<QuestsPage> {
             style: GoogleFonts.poppins(
               fontSize: 28,
               fontWeight: FontWeight.w700,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             'Complete quests by finishing lesson quizzes.',
-            style: GoogleFonts.poppins(fontSize: 14, color: Colors.black54),
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
           ),
           if (widget.onOpenShop != null) ...[
             const SizedBox(height: 10),
@@ -125,13 +129,18 @@ class _QuestsPageState extends State<QuestsPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF4D6),
+                color: Theme.of(context).colorScheme.surfaceVariant,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFFFCC66)),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
               child: Text(
                 'Guest mode reminder: quest completion and rewards are only saved for logged-in accounts.',
-                style: GoogleFonts.poppins(fontSize: 12),
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
             ),
           ],
@@ -142,7 +151,7 @@ class _QuestsPageState extends State<QuestsPage> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: const Color(0xFFF4F7FC),
+              color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -150,13 +159,17 @@ class _QuestsPageState extends State<QuestsPage> {
               style: GoogleFonts.poppins(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
           const SizedBox(height: 16),
           Text(
             'Completed today: $_completedCount/${_quests.length}',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 10),
           ..._quests.map(_buildQuestTile),
@@ -172,7 +185,7 @@ class _QuestsPageState extends State<QuestsPage> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: const Color(0xFFE8F1FF),
+        color: Theme.of(context).colorScheme.surfaceVariant,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,20 +202,27 @@ class _QuestsPageState extends State<QuestsPage> {
           const SizedBox(height: 14),
           Text(
             'Level progress',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           const SizedBox(height: 8),
           LinearProgressIndicator(
             value: progress.clamp(0.0, 1.0),
             minHeight: 10,
             borderRadius: BorderRadius.circular(999),
-            backgroundColor: Colors.white,
+            backgroundColor:
+                Theme.of(context).colorScheme.onSurface.withOpacity(0.12),
             color: const Color(0xFF395886),
           ),
           const SizedBox(height: 8),
           Text(
             '${progressCurrent.toInt()} / ${progressMax.toInt()} EXP toward next level',
-            style: GoogleFonts.poppins(fontSize: 12),
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ),
           ),
         ],
       ),
@@ -213,12 +233,16 @@ class _QuestsPageState extends State<QuestsPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600),
+        style: GoogleFonts.poppins(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
     );
   }
@@ -234,15 +258,23 @@ class _QuestsPageState extends State<QuestsPage> {
       child: ListTile(
         leading: Icon(
           quest.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
-          color: quest.isCompleted ? Colors.green : Colors.grey,
+          color: quest.isCompleted
+              ? Colors.green
+              : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
         ),
         title: Text(
           quest.title,
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
         subtitle: Text(
           '$questSubtitle\nReward: +${quest.expReward} EXP, +${quest.coinReward} coins',
-          style: GoogleFonts.poppins(fontSize: 12),
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+          ),
         ),
         isThreeLine: true,
       ),

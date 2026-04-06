@@ -59,144 +59,171 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          // 🔹 Profile Header
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage: AssetImage(
-                    widget.avatars[widget.selectedAvatar],
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        child: Column(
+          children: [
+            // 🔹 Profile Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: AssetImage(
+                      widget.avatars[widget.selectedAvatar],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
+                  const SizedBox(width: 16),
 
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _displayName,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        color: Color.fromARGB(255, 0, 0, 0),
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    ElevatedButton(
-                      onPressed: widget.onChangeAvatar,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8AAEE0),
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                      child: const Text("Change Avatar"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          const Divider(color: Colors.black),
-
-          // 🔹 Stats Section
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            child: _loadingStats
-                ? const Center(child: CircularProgressIndicator())
-                : Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '• Level: $_level',
-                        style: GoogleFonts.poppins(fontSize: 18),
+                        _displayName,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
+
                       const SizedBox(height: 8),
-                      Text(
-                        '• Total EXP: $_exp',
-                        style: GoogleFonts.poppins(fontSize: 18),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '• Coins: $_coins',
-                        style: GoogleFonts.poppins(fontSize: 18),
-                      ),
-                      const SizedBox(height: 12),
-                      LinearProgressIndicator(
-                        value: expInLevel / 100,
-                        minHeight: 10,
-                        borderRadius: BorderRadius.circular(999),
-                        backgroundColor: Colors.grey[300],
-                        color: const Color(0xFF395886),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'EXP to next level: $expInLevel / 100',
-                        style: GoogleFonts.poppins(fontSize: 12),
+
+                      ElevatedButton(
+                        onPressed: widget.onChangeAvatar,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onPrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                        ),
+                        child: const Text("Change Avatar"),
                       ),
                     ],
                   ),
-          ),
-
-          const Divider(color: Colors.black),
-
-          // 🔹 Settings Button
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: ElevatedButton(
-              onPressed: widget.onOpenSettings,
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(200, 50),
-                backgroundColor: const Color(0xFF8AAEE0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
+                ],
               ),
-              child: Text(
-                "Settings",
-                style: GoogleFonts.poppins(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+            ),
+
+            Divider(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+            ),
+
+            // 🔹 Stats Section
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              child: _loadingStats
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '• Level: $_level',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '• Total EXP: $_exp',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '• Coins: $_coins',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        LinearProgressIndicator(
+                          value: expInLevel / 100,
+                          minHeight: 10,
+                          borderRadius: BorderRadius.circular(999),
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.12),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'EXP to next level: $expInLevel / 100',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+            ),
+
+            Divider(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+            ),
+
+            // 🔹 Settings Button
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: ElevatedButton(
+                onPressed: widget.onOpenSettings,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(200, 50),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                child: Text(
+                  "Settings",
+                  style: GoogleFonts.poppins(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
-          ),
 
-          const Spacer(),
+            const Spacer(),
 
-          // 🔹 Logout Button
-          Padding(
-            padding: const EdgeInsets.only(bottom: 80),
-            child: ElevatedButton(
-              onPressed: widget.onLogout,
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(220, 50),
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+            // 🔹 Logout Button
+            Padding(
+              padding: const EdgeInsets.only(bottom: 80),
+              child: ElevatedButton(
+                onPressed: widget.onLogout,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(220, 50),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-              ),
-              child: Text(
-                "LOG OUT",
-                style: GoogleFonts.poppins(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                child: Text(
+                  "LOG OUT",
+                  style: GoogleFonts.poppins(
+                    color: Theme.of(context).colorScheme.onError,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -98,10 +98,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         borderRadius: BorderRadius.circular(20),
         // Color of the active vs inactive dots
         color: currentIndex == index
-            ? Color(0xFF395886)
-            : Colors
-                  .grey
-                  .shade400, // Darkened slightly for better visibility on the new background
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).colorScheme.onSurface.withOpacity(0.35),
       ),
     );
   }
@@ -110,7 +108,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     // Scaffold provides the blank canvas for our screen.
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F6FC),
+      backgroundColor: Theme.of(context).colorScheme.surface,
 
       // SafeArea keeps our design from hiding behind the phone's camera notch.
       body: SafeArea(
@@ -149,7 +147,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: GoogleFonts.poppins(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -160,7 +158,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           textAlign: TextAlign.center,
                           style: GoogleFonts.inter(
                             fontSize: 16,
-                            color: Colors.black54,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.7),
                           ),
                         ),
                       ],
@@ -183,9 +184,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     onPressed: () {
                       _controller.jumpToPage(contents.length - 1);
                     },
-                    child: const Text(
+                    child: Text(
                       "SKIP",
-                      style: TextStyle(color: Colors.black54),
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.6),
+                      ),
                     ),
                   ),
 
@@ -219,8 +225,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF395886),
-                      foregroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
