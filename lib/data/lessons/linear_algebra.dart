@@ -10,6 +10,9 @@ final vectorLesson = Lesson(
       content:
           "A vector is a quantity that has both magnitude (size) and direction.\n\nExamples include displacement, velocity, and force.",
       message: "Think of a vector as an arrow pointing somewhere.",
+      contentImageOrient: ContentImageOrient.right,
+      additionalContent:
+          "Quick check: if direction changes, it is not the same vector even when magnitude is equal.",
     ),
     LessonSection(
       content:
@@ -19,6 +22,7 @@ final vectorLesson = Lesson(
       content:
           "Vector addition combines two vectors:\n\n(u + v) = (x1 + x2, y1 + y2)\n\nYou simply add corresponding components.",
       message: "Add x with x, and y with y — that's it!",
+      additionalContent: "Example: (2, -1) + (3, 4) = (5, 3).",
     ),
     LessonSection(
       content:
@@ -65,6 +69,8 @@ final matrixLesson = Lesson(
     LessonSection(
       content:
           "A matrix is a rectangular array of numbers arranged in rows and columns.",
+      additionalContent:
+          "Matrix size is written as rows x columns, such as 2x3.",
     ),
     LessonSection(
       content:
@@ -122,6 +128,8 @@ final linearSystemsLesson = Lesson(
 
       Solutions can be unique, infinite, or none.
       """,
+      additionalContent:
+          "Always check the number of equations versus variables before choosing a solving method.",
     ),
     LessonSection(
       content: """
@@ -137,6 +145,8 @@ final linearSystemsLesson = Lesson(
 
       If det(A) != 0, the system has a unique solution.
       """,
+      additionalContent:
+          "When det(A) = 0, test consistency to know if the system has no solution or infinitely many.",
     ),
   ],
   quizProblems: [
@@ -212,6 +222,8 @@ final eigenLesson = Lesson(
       Eigenvectors are vectors that remain in the same direction under a transformation.
       Eigenvalues are scalars λ satisfying Av = λv.
       """,
+      additionalContent:
+          "In short, eigenvectors keep their direction while only being scaled.",
     ),
     LessonSection(
       content: """

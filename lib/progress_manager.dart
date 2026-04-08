@@ -71,6 +71,16 @@ class QuizCompletionRecord {
   }
 }
 
+class LessonProgressStatus {
+  final bool lessonRead;
+  final bool quizCompleted;
+
+  const LessonProgressStatus({
+    required this.lessonRead,
+    required this.quizCompleted,
+  });
+}
+
 class ProgressSnapshot {
   final List<SubjectProgressData> subjects;
   final QuizCompletionRecord? recentQuiz;
@@ -115,7 +125,9 @@ class ProgressManager {
     final raw = prefs.getString(key);
     if (raw == null) {
       return {
+        'readLessons': <String>[],
         'completedLessons': <String>[],
+        'rewardedQuizLessons': <String>[],
         'quizStats': <String, dynamic>{},
         'recentQuizzes': <dynamic>[],
       };
@@ -123,7 +135,11 @@ class ProgressManager {
 
     final decoded = jsonDecode(raw) as Map<String, dynamic>;
     return {
+      'readLessons': List<String>.from(decoded['readLessons'] ?? []),
       'completedLessons': List<String>.from(decoded['completedLessons'] ?? []),
+      'rewardedQuizLessons': List<String>.from(
+        decoded['rewardedQuizLessons'] ?? [],
+      ),
       'quizStats': Map<String, dynamic>.from(decoded['quizStats'] ?? {}),
       'recentQuizzes': List<dynamic>.from(decoded['recentQuizzes'] ?? []),
     };
@@ -141,6 +157,11 @@ class ProgressManager {
     required int totalQuestions,
   }) async {
     final data = await _loadData();
+
+    final readLessons = List<String>.from(data['readLessons'] as List);
+    if (!readLessons.contains(lessonTitle)) {
+      readLessons.add(lessonTitle);
+    }
 
     final completedLessons = List<String>.from(
       data['completedLessons'] as List,
@@ -189,10 +210,69 @@ class ProgressManager {
     final trimmedRecent = recent.take(10).toList();
 
     await _saveData({
+      'readLessons': readLessons,
       'completedLessons': completedLessons,
+      'rewardedQuizLessons': List<String>.from(
+        data['rewardedQuizLessons'] as List,
+      ),
       'quizStats': quizStats,
       'recentQuizzes': trimmedRecent,
     });
+  }
+
+  static Future<void> markLessonRead(String lessonTitle) async {
+    final data = await _loadData();
+    final readLessons = List<String>.from(data['readLessons'] as List);
+    if (!readLessons.contains(lessonTitle)) {
+      readLessons.add(lessonTitle);
+      await _saveData({
+        'readLessons': readLessons,
+        'completedLessons': List<String>.from(data['completedLessons'] as List),
+        'rewardedQuizLessons': List<String>.from(
+          data['rewardedQuizLessons'] as List,
+        ),
+        'quizStats': Map<String, dynamic>.from(data['quizStats'] as Map),
+        'recentQuizzes': List<dynamic>.from(data['recentQuizzes'] as List),
+      });
+    }
+  }
+
+  static Future<bool> hasClaimedQuizReward(String lessonTitle) async {
+    final data = await _loadData();
+    final rewarded = Set<String>.from(data['rewardedQuizLessons'] as List);
+    return rewarded.contains(lessonTitle);
+  }
+
+  static Future<void> markQuizRewardClaimed(String lessonTitle) async {
+    final data = await _loadData();
+    final rewarded = List<String>.from(data['rewardedQuizLessons'] as List);
+    if (!rewarded.contains(lessonTitle)) {
+      rewarded.add(lessonTitle);
+      await _saveData({
+        'readLessons': List<String>.from(data['readLessons'] as List),
+        'completedLessons': List<String>.from(data['completedLessons'] as List),
+        'rewardedQuizLessons': rewarded,
+        'quizStats': Map<String, dynamic>.from(data['quizStats'] as Map),
+        'recentQuizzes': List<dynamic>.from(data['recentQuizzes'] as List),
+      });
+    }
+  }
+
+  static Future<Map<String, LessonProgressStatus>> getLessonProgressStatuses(
+    List<String> lessonTitles,
+  ) async {
+    final data = await _loadData();
+    final readLessons = Set<String>.from(data['readLessons'] as List);
+    final completedLessons = Set<String>.from(data['completedLessons'] as List);
+
+    final statuses = <String, LessonProgressStatus>{};
+    for (final title in lessonTitles) {
+      statuses[title] = LessonProgressStatus(
+        lessonRead: readLessons.contains(title),
+        quizCompleted: completedLessons.contains(title),
+      );
+    }
+    return statuses;
   }
 
   static Future<ProgressSnapshot> getProgressSnapshot() async {
@@ -256,7 +336,9 @@ class ProgressManager {
 
   static Future<void> resetProgress() async {
     await _saveData({
+      'readLessons': <String>[],
       'completedLessons': <String>[],
+      'rewardedQuizLessons': <String>[],
       'quizStats': <String, dynamic>{},
       'recentQuizzes': <dynamic>[],
     });

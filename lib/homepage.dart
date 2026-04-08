@@ -94,6 +94,42 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showSettingsContent = false;
   bool _showShopContent = false;
   bool _showAboutContent = false;
+  bool _showBottomNavTutorial = false;
+  bool _showBottomNavTutorialIntro = false;
+  int _tutorialStepIndex = 0;
+
+  final List<GlobalKey> _bottomNavItemKeys = List.generate(
+    5,
+    (_) => GlobalKey(),
+  );
+
+  final List<_BottomNavTutorialStep> _tutorialSteps = const [
+    _BottomNavTutorialStep(
+      navIndex: 0,
+      title: 'Home',
+      description: 'View your dashboard and daily learning summary.',
+    ),
+    _BottomNavTutorialStep(
+      navIndex: 1,
+      title: 'Progress',
+      description: 'Track completed lessons and quiz performance.',
+    ),
+    _BottomNavTutorialStep(
+      navIndex: 2,
+      title: 'Subjects',
+      description: 'Browse topics and start lessons by subject.',
+    ),
+    _BottomNavTutorialStep(
+      navIndex: 3,
+      title: 'Quests',
+      description: 'Complete tasks to earn rewards and level up.',
+    ),
+    _BottomNavTutorialStep(
+      navIndex: 4,
+      title: 'Profile',
+      description: 'Manage your account, avatar, and preferences.',
+    ),
+  ];
 
   int _selectedAvatar = 0;
   int animationKey = 0;
@@ -306,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Container(
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.45),
+                                          color: Colors.black.withValues(alpha: 0.45),
                                           shape: BoxShape.circle,
                                         ),
                                         child: const Icon(
@@ -381,6 +417,337 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadSelectedAvatar();
+    _maybeShowBottomNavTutorial();
+  }
+
+  Future<void> _maybeShowBottomNavTutorial() async {
+    final shouldShow = await LocalStorage.shouldShowBottomNavTutorial();
+    if (!mounted || !shouldShow) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _tutorialStepIndex = 0;
+        _showBottomNavTutorialIntro = true;
+        _showBottomNavTutorial = true;
+      });
+    });
+  }
+
+  Future<void> _finishBottomNavTutorial() async {
+    await LocalStorage.setHasSeenBottomNavTutorialForCurrentUser(true);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _showBottomNavTutorial = false;
+      _showBottomNavTutorialIntro = false;
+    });
+  }
+
+  void _startBottomNavTooltipSteps() {
+    setState(() {
+      _showBottomNavTutorialIntro = false;
+      _tutorialStepIndex = 0;
+    });
+  }
+
+  void _nextTutorialStep() {
+    if (_tutorialStepIndex >= _tutorialSteps.length - 1) {
+      _finishBottomNavTutorial();
+      return;
+    }
+
+    setState(() {
+      _tutorialStepIndex += 1;
+    });
+  }
+
+  Rect? _getRectFromKey(GlobalKey key) {
+    final context = key.currentContext;
+    if (context == null) {
+      return null;
+    }
+
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.hasSize) {
+      return null;
+    }
+
+    final offset = renderBox.localToGlobal(Offset.zero);
+    return offset & renderBox.size;
+  }
+
+  double _resolveTooltipTargetCenterX({
+    required _BottomNavTutorialStep step,
+    required Rect? targetRect,
+    required double fallbackCenterX,
+  }) {
+    if (targetRect == null) {
+      return fallbackCenterX;
+    }
+
+    final isSelectedTab = _selectedIndex == step.navIndex;
+    final isExpandedTab = targetRect.width > 58;
+    if (isSelectedTab && isExpandedTab) {
+      return targetRect.left + 22;
+    }
+
+    return targetRect.center.dx;
+  }
+
+  Widget _buildBottomNavTutorialOverlay() {
+    if (_showBottomNavTutorialIntro) {
+      return Positioned.fill(
+        child: Material(
+          color: Colors.black.withValues(alpha: 0.42),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 340),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.14),
+                        blurRadius: 14,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Let's help you navigate",
+                        style: GoogleFonts.poppins(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF1F2A3B),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'We will quickly walk through the 5 buttons in your bottom navigation bar.',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          height: 1.35,
+                          color: const Color(0xFF4B5566),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          TextButton(
+                            onPressed: _finishBottomNavTutorial,
+                            child: const Text('Skip'),
+                          ),
+                          const Spacer(),
+                          ElevatedButton(
+                            onPressed: _startBottomNavTooltipSteps,
+                            child: const Text('Start'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final size = MediaQuery.of(context).size;
+    final insets = MediaQuery.of(context).padding;
+    final step = _tutorialSteps[_tutorialStepIndex];
+    final targetRect = _getRectFromKey(_bottomNavItemKeys[step.navIndex]);
+
+    final fallbackSegmentWidth = size.width / _tutorialSteps.length;
+    final fallbackCenterX =
+        (fallbackSegmentWidth * step.navIndex) + (fallbackSegmentWidth / 2);
+
+    final targetCenterX = _resolveTooltipTargetCenterX(
+      step: step,
+      targetRect: targetRect,
+      fallbackCenterX: fallbackCenterX,
+    );
+    final targetCenterY =
+        targetRect?.center.dy ??
+        (size.height - insets.bottom - kBottomNavigationBarHeight / 2 - 14);
+
+    const highlightSize = 58.0;
+    final highlightLeft =
+        targetCenterX.clamp(highlightSize / 2, size.width - highlightSize / 2) -
+        highlightSize / 2;
+    final highlightTop = targetCenterY - highlightSize / 2;
+
+    final tooltipWidth = math.min(320.0, size.width * 0.86);
+    final desiredTooltipLeft = targetCenterX - (tooltipWidth / 2);
+    final tooltipLeft = desiredTooltipLeft.clamp(
+      16.0,
+      size.width - tooltipWidth - 16.0,
+    );
+
+    final desiredTooltipTop = highlightTop - 148;
+    final tooltipTop = desiredTooltipTop.clamp(
+      insets.top + 18,
+      size.height - 220,
+    );
+
+    final isLastStep = _tutorialStepIndex == _tutorialSteps.length - 1;
+
+    return Positioned.fill(
+      child: Material(
+        color: Colors.black.withValues(alpha: 0.42),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: _nextTutorialStep,
+                child: const SizedBox.expand(),
+              ),
+            ),
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 280),
+              curve: Curves.easeOutCubic,
+              left: highlightLeft,
+              top: highlightTop,
+              child: IgnorePointer(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 280),
+                  width: highlightSize,
+                  height: highlightSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2.8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.26),
+                        blurRadius: 22,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 280),
+              curve: Curves.easeOutCubic,
+              left: tooltipLeft,
+              top: tooltipTop,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: tooltipWidth),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 260),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  transitionBuilder: (child, animation) {
+                    final offsetAnimation = Tween<Offset>(
+                      begin: const Offset(0, 0.08),
+                      end: Offset.zero,
+                    ).animate(animation);
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: Container(
+                    key: ValueKey(_tutorialStepIndex),
+                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.14),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          step.title,
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF1F2A3B),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          step.description,
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            height: 1.3,
+                            color: const Color(0xFF4B5566),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Text(
+                              '${_tutorialStepIndex + 1}/${_tutorialSteps.length}',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: const Color(0xFF74839A),
+                              ),
+                            ),
+                            const Spacer(),
+                            TextButton(
+                              onPressed: _finishBottomNavTutorial,
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color(0xFF4B5566),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                              ),
+                              child: const Text('Skip'),
+                            ),
+                            const SizedBox(width: 4),
+                            TextButton(
+                              onPressed: _nextTutorialStep,
+                              child: Text(isLastStep ? 'Done' : 'Next'),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          'Tip: tap anywhere to continue',
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            color: const Color(0xFF95A2B5),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -388,170 +755,181 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    return Stack(
+      children: [
+        Scaffold(
+          extendBody: true,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-      drawer: Drawer(
-        backgroundColor: Colors.transparent,
-        child: ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: Container(
-              color: const Color(0xFFF2F6FC).withOpacity(0.75),
-              child: Column(
-                children: [
-                  DrawerHeader(
-                    decoration: BoxDecoration(color: Colors.transparent),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset("logo.png", height: 60),
-                        const SizedBox(height: 12),
-                        Text(
-                          "DASHBOARD",
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF395886),
-                          ),
+          drawer: Drawer(
+            backgroundColor: Colors.transparent,
+            child: ClipRRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                child: Container(
+                  color: const Color(0xFFF2F6FC).withValues(alpha: 0.75),
+                  child: Column(
+                    children: [
+                      DrawerHeader(
+                        decoration: BoxDecoration(color: Colors.transparent),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset("logo.png", height: 60),
+                            const SizedBox(height: 12),
+                            Text(
+                              "DASHBOARD",
+                              style: GoogleFonts.poppins(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF395886),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.home_outlined,
+                        label: "Home",
+                        onTap: () => _navigateFromDrawer(showHome: true),
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.library_books_outlined,
+                        label: "Subjects",
+                        onTap: () => _navigateFromDrawer(bottomNavIndex: 2),
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.trending_up_outlined,
+                        label: "Progress",
+                        onTap: () => _navigateFromDrawer(bottomNavIndex: 1),
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.task_alt_outlined,
+                        label: "Quests",
+                        onTap: () => _navigateFromDrawer(bottomNavIndex: 3),
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.storefront_outlined,
+                        label: "Shop",
+                        onTap: () => _navigateFromDrawer(showShop: true),
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.account_circle_outlined,
+                        label: "Profile",
+                        onTap: () => _navigateFromDrawer(bottomNavIndex: 4),
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.settings_outlined,
+                        label: "Settings",
+                        onTap: () => _navigateFromDrawer(showSettings: true),
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.info_outlined,
+                        label: "About",
+                        onTap: () => _navigateFromDrawer(showAbout: true),
+                      ),
+                      _buildDrawerItem(
+                        icon: Icons.exit_to_app_outlined,
+                        label: "Logout",
+                        onTap: _confirmLogout,
+                      ),
+                    ],
                   ),
-                  _buildDrawerItem(
-                    icon: Icons.home_outlined,
-                    label: "Home",
-                    onTap: () => _navigateFromDrawer(showHome: true),
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.library_books_outlined,
-                    label: "Subjects",
-                    onTap: () => _navigateFromDrawer(bottomNavIndex: 2),
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.trending_up_outlined,
-                    label: "Progress",
-                    onTap: () => _navigateFromDrawer(bottomNavIndex: 1),
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.task_alt_outlined,
-                    label: "Quests",
-                    onTap: () => _navigateFromDrawer(bottomNavIndex: 3),
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.storefront_outlined,
-                    label: "Shop",
-                    onTap: () => _navigateFromDrawer(showShop: true),
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.account_circle_outlined,
-                    label: "Profile",
-                    onTap: () => _navigateFromDrawer(bottomNavIndex: 4),
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.settings_outlined,
-                    label: "Settings",
-                    onTap: () => _navigateFromDrawer(showSettings: true),
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.info_outlined,
-                    label: "About",
-                    onTap: () => _navigateFromDrawer(showAbout: true),
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.exit_to_app_outlined,
-                    label: "Logout",
-                    onTap: _confirmLogout,
-                  ),
-                ],
+                ),
               ),
             ),
           ),
+
+          body: Column(
+            children: [
+              // Custom Header with Burger, Dashboard, and Dark Mode
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Row(
+                  children: [
+                    Builder(
+                      builder: (context) => IconButton(
+                        icon: const Icon(Icons.menu),
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Text(
+                          _getAppBarTitle(),
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Transform.rotate(
+                        angle: -0.35,
+                        child: const Icon(Icons.nightlight_round),
+                      ),
+                      onPressed: () => themeController.toggle(),
+                      style: IconButton.styleFrom(
+                        shape: CircleBorder(
+                          side: BorderSide(
+                            color:
+                                Theme.of(context).iconTheme.color ??
+                                Colors.grey,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                ),
+              ),
+              // Content
+              Expanded(
+                child: _showHomeContent
+                    ? _homeContent(context)
+                    : _showSettingsContent
+                    ? SettingsPage(
+                        onGoToSubjects: () {
+                          setState(() {
+                            _showHomeContent = false;
+                            _showSettingsContent = false;
+                            _showShopContent = false;
+                            _showAboutContent = false;
+                            _selectedIndex = 2; // Subjects index
+                          });
+                        },
+                      )
+                    : _showShopContent
+                    ? ShopPage(
+                        onAvatarEquipped: (avatarIndex) {
+                          setState(() {
+                            _selectedAvatar = avatarIndex;
+                          });
+                        },
+                      )
+                    : _showAboutContent
+                    ? const AboutPage()
+                    : _pages[_selectedIndex],
+              ),
+            ],
+          ),
+
+          bottomNavigationBar: MyBottomNavBar(
+            selectedIndex: _selectedIndex,
+            onTabChange: _onItemTapped,
+            navItemKeys: _bottomNavItemKeys,
+          ),
         ),
-      ),
-
-      body: Column(
-        children: [
-          // Custom Header with Burger, Dashboard, and Dark Mode
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Builder(
-                  builder: (context) => IconButton(
-                    icon: const Icon(Icons.menu),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Text(
-                      _getAppBarTitle(),
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: Transform.rotate(
-                    angle: -0.35,
-                    child: const Icon(Icons.nightlight_round),
-                  ),
-                  onPressed: () => themeController.toggle(),
-                  style: IconButton.styleFrom(
-                    shape: CircleBorder(
-                      side: BorderSide(
-                        color: Theme.of(context).iconTheme.color ?? Colors.grey,
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-              ],
-            ),
-          ),
-          // Content
-          Expanded(
-            child: _showHomeContent
-                ? _homeContent(context)
-                : _showSettingsContent
-                ? SettingsPage(
-                    onGoToSubjects: () {
-                      setState(() {
-                        _showHomeContent = false;
-                        _showSettingsContent = false;
-                        _showShopContent = false;
-                        _showAboutContent = false;
-                        _selectedIndex = 2; // Subjects index
-                      });
-                    },
-                  )
-                : _showShopContent
-                ? ShopPage(
-                    onAvatarEquipped: (avatarIndex) {
-                      setState(() {
-                        _selectedAvatar = avatarIndex;
-                      });
-                    },
-                  )
-                : _showAboutContent
-                ? const AboutPage()
-                : _pages[_selectedIndex],
-          ),
-        ],
-      ),
-
-      bottomNavigationBar: MyBottomNavBar(
-        selectedIndex: _selectedIndex,
-        onTabChange: _onItemTapped,
-      ),
+        if (_showBottomNavTutorial) _buildBottomNavTutorialOverlay(),
+      ],
     );
   }
 
@@ -589,7 +967,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: 15,
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.6),
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
               const SizedBox(height: 18),
@@ -745,7 +1123,7 @@ class _HomeScreenState extends State<HomeScreen> {
               '${recentQuiz.subjectTitle} • ${recentQuiz.correctAnswers}/${recentQuiz.totalQuestions} • ${recentQuiz.percentage}%',
               style: GoogleFonts.poppins(
                 fontSize: 13,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -759,7 +1137,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final textColor = Theme.of(context).colorScheme.onSurface;
     final mutedTextColor = Theme.of(
       context,
-    ).colorScheme.onSurface.withOpacity(0.7);
+    ).colorScheme.onSurface.withValues(alpha: 0.7);
 
     return GestureDetector(
       onTap: () {
@@ -775,7 +1153,7 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(22),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 12,
                 offset: const Offset(0, 8),
               ),
@@ -859,8 +1237,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     const drawerTextColor = Color(0xFF1F232B);
     const drawerIconColor = Color(0xFF395886);
-    final hoverColor = drawerTextColor.withOpacity(0.12);
-    final splashColor = drawerTextColor.withOpacity(0.16);
+    final hoverColor = drawerTextColor.withValues(alpha: 0.12);
+    final splashColor = drawerTextColor.withValues(alpha: 0.16);
 
     return Material(
       color: Colors.transparent,
@@ -883,4 +1261,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class _BottomNavTutorialStep {
+  final int navIndex;
+  final String title;
+  final String description;
+
+  const _BottomNavTutorialStep({
+    required this.navIndex,
+    required this.title,
+    required this.description,
+  });
 }

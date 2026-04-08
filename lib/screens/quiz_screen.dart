@@ -13,12 +13,14 @@ class QuizScreen extends StatefulWidget {
   final List<QuizProblem> problems;
   final Color? themeColor;
   final String lessonTitle;
+  final int backToLessonsPopCount;
 
   const QuizScreen({
     super.key,
     required this.problems,
     required this.lessonTitle,
     this.themeColor,
+    this.backToLessonsPopCount = 2,
   });
 
   @override
@@ -57,6 +59,7 @@ class _QuizScreenState extends State<QuizScreen> {
           answers: answers,
           lessonTitle: widget.lessonTitle,
           themeColor: widget.themeColor,
+          backToLessonsPopCount: widget.backToLessonsPopCount,
         ),
       ),
     );
@@ -69,8 +72,8 @@ class _QuizScreenState extends State<QuizScreen> {
     final themeColor = widget.themeColor;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.primary;
-    final buttonBackground = isDark 
-        ? const Color(0xFF1565C0)  // Darker blue for dark mode
+    final buttonBackground = isDark
+        ? const Color(0xFF1565C0) // Darker blue for dark mode
         : (themeColor ?? primary);
     final buttonForeground = Colors.white;
 
@@ -178,6 +181,7 @@ class QuizResultsScreen extends StatefulWidget {
   final Map<int, String> answers;
   final String lessonTitle;
   final Color? themeColor;
+  final int backToLessonsPopCount;
 
   const QuizResultsScreen({
     super.key,
@@ -185,6 +189,7 @@ class QuizResultsScreen extends StatefulWidget {
     required this.answers,
     required this.lessonTitle,
     this.themeColor,
+    this.backToLessonsPopCount = 2,
   });
 
   @override
@@ -198,6 +203,9 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
   static const int _perCorrectCoinReward = 1;
 
   QuestCompletionResult? _rewardResult;
+  int _quizExpReward = 0;
+  int _quizCoinReward = 0;
+  bool _isRetakeWithoutRewards = false;
 
   @override
   void initState() {
@@ -222,6 +230,21 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
       totalQuestions: totalQuestions,
     );
 
+    final rewardAlreadyClaimed = await ProgressManager.hasClaimedQuizReward(
+      widget.lessonTitle,
+    );
+
+    if (rewardAlreadyClaimed) {
+      if (!mounted) return;
+      setState(() {
+        _isRetakeWithoutRewards = true;
+        _rewardResult = null;
+        _quizExpReward = 0;
+        _quizCoinReward = 0;
+      });
+      return;
+    }
+
     final quizExpReward =
         _baseQuizExpReward + (correctAnswers * _perCorrectExpReward);
     final quizCoinReward =
@@ -235,8 +258,14 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
     );
     if (!mounted) return;
 
+    await ProgressManager.markQuizRewardClaimed(widget.lessonTitle);
+    if (!mounted) return;
+
     setState(() {
       _rewardResult = result;
+      _quizExpReward = quizExpReward;
+      _quizCoinReward = quizCoinReward;
+      _isRetakeWithoutRewards = false;
     });
 
     final questCount = result.completedQuests.length;
@@ -250,8 +279,16 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
               '+${result.totalExpReward} EXP, +${result.totalCoinReward} coins.'
         : 'Quiz reward: +$quizExpReward EXP, +$quizCoinReward coins.';
 
+    final size = MediaQuery.of(context).size;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.fromLTRB(
+          20,
+          size.height * 0.38,
+          20,
+          size.height * 0.38,
+        ),
         content: Text('$message Total: +$totalExp EXP, +$totalCoins coins.'),
       ),
     );
@@ -262,7 +299,7 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.primary;
     final buttonBackground = isDark
-        ? const Color(0xFF1565C0)  // Darker blue for dark mode
+        ? const Color(0xFF1565C0) // Darker blue for dark mode
         : (widget.themeColor ?? primary);
     final buttonForeground = Colors.white;
 
@@ -273,26 +310,27 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
       ),
       body: Column(
         children: [
-          if (_rewardResult?.hasRewards == true)
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.surfaceVariant.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                'Daily quest rewards collected: '
-                '+${_rewardResult!.totalExpReward} EXP, '
-                '+${_rewardResult!.totalCoinReward} coins',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(10),
             ),
+            child: Text(
+              _isRetakeWithoutRewards
+                  ? 'Retake detected: no rewards granted for this lesson quiz.'
+                  : _rewardResult?.hasRewards == true
+                  ? 'Rewards collected: '
+                        'Quiz +$_quizExpReward EXP, +$_quizCoinReward coins • '
+                        'Quest +${_rewardResult!.totalExpReward} EXP, +${_rewardResult!.totalCoinReward} coins'
+                  : 'Quiz rewards collected: +$_quizExpReward EXP, +$_quizCoinReward coins',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
+          ),
 
           // 🔹 LIST
           Expanded(
@@ -325,7 +363,7 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
                           style: TextStyle(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.8),
+                            ).colorScheme.onSurface.withValues(alpha: 0.8),
                           ),
                         ),
                         Text(
@@ -333,7 +371,7 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
                           style: TextStyle(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.8),
+                            ).colorScheme.onSurface.withValues(alpha: 0.8),
                           ),
                         ),
                         Text(
@@ -341,7 +379,7 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
                           style: TextStyle(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.9),
+                            ).colorScheme.onSurface.withValues(alpha: 0.9),
                           ),
                         ),
                       ],
@@ -359,8 +397,11 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context); // Results → LessonDetail
-                  Navigator.pop(context); // LessonDetail → LessonsScreen
+                  for (var i = 0; i < widget.backToLessonsPopCount; i++) {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonBackground,

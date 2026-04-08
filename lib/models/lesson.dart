@@ -16,10 +16,20 @@ class Lesson {
   });
 }
 
+enum ContentImageOrient { left, right }
+
 class LessonSection {
   final String content;
   final String? message;
-  final String? imagePath; // 👈 NEW
+  final String? imagePath;
+  final ContentImageOrient? contentImageOrient;
+  final String? additionalContent;
 
-  LessonSection({required this.content, this.message, this.imagePath});
+  LessonSection({
+    required this.content,
+    this.message,
+    this.imagePath,
+    this.contentImageOrient,
+    this.additionalContent,
+  });
 }

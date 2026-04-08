@@ -5,6 +5,7 @@ class LocalStorage {
   static const _keyIsLoggedIn = 'isLoggedIn';
   static const _keyAccounts = 'accounts';
   static const _keyHasSeenOnboarding = 'hasSeenOnboarding';
+  static const _keyBottomNavTutorialPrefix = 'hasSeenBottomNavTutorial';
   static const _keyCurrentUsername = 'currentUsername';
   static const _keyGuestExp = 'guestExp';
   static const _keyGuestCoins = 'guestCoins';
@@ -148,6 +149,47 @@ class LocalStorage {
   static Future<String?> getCurrentUsername() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyCurrentUsername);
+  }
+
+  static String _bottomNavTutorialKeyForUsername(String username) {
+    return '$_keyBottomNavTutorialPrefix-$username';
+  }
+
+  static Future<bool> hasSeenBottomNavTutorialForCurrentUser() async {
+    final username = await getCurrentUsername();
+    if (username == null) {
+      return false;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_bottomNavTutorialKeyForUsername(username)) ?? false;
+  }
+
+  static Future<void> setHasSeenBottomNavTutorialForCurrentUser(
+    bool value,
+  ) async {
+    final username = await getCurrentUsername();
+    if (username == null) {
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_bottomNavTutorialKeyForUsername(username), value);
+  }
+
+  static Future<bool> shouldShowBottomNavTutorial() async {
+    final username = await getCurrentUsername();
+
+    if (username == null) {
+      return true;
+    }
+
+    if (username == 'admin') {
+      return false;
+    }
+
+    final seenTutorial = await hasSeenBottomNavTutorialForCurrentUser();
+    return !seenTutorial;
   }
 
   static Future<Map<String, dynamic>?> getCurrentAccount() async {

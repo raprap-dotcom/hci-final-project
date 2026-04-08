@@ -42,6 +42,7 @@ flutter:
     - assets/splash.png
     - assets/avatars/
     - assets/animations/
+    - assets/
 
 flutter_native_splash:
   color: "#d5deef"
