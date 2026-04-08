@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:hci_final_project/login_wrapper.dart';
 import 'package:hci_final_project/theme/app_theme.dart';
 import 'package:hci_final_project/widgets/bottom_nav_bar.dart';
@@ -19,64 +20,22 @@ import 'package:hci_final_project/data/avatar_catalog.dart';
 import 'package:hci_final_project/progress_manager.dart';
 
 // Animated Trophy Widget
-class _AnimatedAchievementTrophy extends StatefulWidget {
+class _AnimatedAchievementTrophy extends StatelessWidget {
   const _AnimatedAchievementTrophy();
 
   @override
-  State<_AnimatedAchievementTrophy> createState() =>
-      _AnimatedAchievementTrophyState();
-}
-
-class _AnimatedAchievementTrophyState extends State<_AnimatedAchievementTrophy>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat(reverse: false);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        // Bounce animation: go down then up
-        final bounce = math.sin(_controller.value * math.pi * 2) * 8;
-        // Rotation: full spin
-        final rotation = _controller.value * math.pi * 2;
-
-        return Transform.translate(
-          offset: Offset(0, bounce),
-          child: Transform.rotate(
-            angle: rotation * 0.2, // Gentle rotation
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: const Color(0xFF395886).withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Image.asset(
-                'icons/trophy.png',
-                width: 70,
-                height: 70,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        );
-      },
+    return Transform.translate(
+      offset: const Offset(-22, 0),
+      child: SizedBox(
+        width: 200,
+        height: 200,
+        child: Lottie.asset(
+          'assets/animations/achievements_trophy.json',
+          fit: BoxFit.contain,
+          repeat: true,
+        ),
+      ),
     );
   }
 }
@@ -206,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_showSettingsContent) return 'Settings';
     if (_showShopContent) return 'Shop';
     if (_showAboutContent) return 'About';
-    
+
     const titles = ['Home', 'Progress', 'Subjects', 'Quests', 'Profile'];
     return titles[_selectedIndex];
   }
@@ -674,7 +633,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -749,7 +708,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -796,9 +755,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildAchievementsCard() {
-    final backgroundColor = Theme.of(context).colorScheme.primary.withOpacity(0.25);
+    const backgroundColor = Color(0xFF8AAEE0);
     final textColor = Theme.of(context).colorScheme.onSurface;
-    final mutedTextColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.7);
+    final mutedTextColor = Theme.of(
+      context,
+    ).colorScheme.onSurface.withOpacity(0.7);
 
     return GestureDetector(
       onTap: () {
