@@ -31,6 +31,21 @@ class _QuizScreenState extends State<QuizScreen> {
   int currentIndex = 0;
   final Map<int, String> answers = {}; // Store all user answers
 
+  void _showHint() {
+    final problem = widget.problems[currentIndex];
+    final hint = problem.hint?.trim();
+    final message = (hint != null && hint.isNotEmpty)
+        ? hint
+        : 'No hint available for this question yet.';
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Hint: $message'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   void _previousQuestion() {
     if (currentIndex > 0) {
       setState(() {
@@ -151,6 +166,11 @@ class _QuizScreenState extends State<QuizScreen> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                ),
+                OutlinedButton.icon(
+                  onPressed: _showHint,
+                  icon: const Icon(Icons.lightbulb_outline),
+                  label: const Text("Hint"),
                 ),
                 ElevatedButton(
                   onPressed: _nextQuestion,

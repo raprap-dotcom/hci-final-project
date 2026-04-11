@@ -42,22 +42,26 @@ final vectorLesson = Lesson(
       type: QuestionType.multipleChoice,
       options: ["(1,2,3)", "(1,2)", "3x + 2", "5"],
       answer: "(1,2,3)",
+      hint: "A vector in R^3 has exactly three components.",
     ),
     QuizProblem(
       question: "True or False: The zero vector is in every vector space.",
       type: QuestionType.trueFalse,
       answer: "True",
+      hint: "Vector space axioms require the additive identity.",
     ),
     QuizProblem(
       question: "Drag the correct components to match the vector v = (2, -3):",
       type: QuestionType.dragAndDrop,
       options: ["2", "-3", "3", "1"],
       answer: "2,-3",
+      hint: "Match x-component first, then y-component.",
     ),
     QuizProblem(
       question: "Write the vector resulting from 2*(1,3):",
       type: QuestionType.typing,
       answer: "(2,6)",
+      hint: "Multiply each component by 2.",
     ),
   ],
 );
@@ -92,12 +96,14 @@ final matrixLesson = Lesson(
       question: "What is the determinant of [[2,3],[1,4]]?",
       type: QuestionType.typing,
       answer: "5",
+      hint: "For 2x2, use ad - bc.",
     ),
     QuizProblem(
       question:
           "True or False: The sum of two matrices of the same dimensions is a matrix of the same dimensions.",
       type: QuestionType.trueFalse,
       answer: "True",
+      hint: "Matrix addition is done element by element.",
     ),
     QuizProblem(
       question: "Which of these is a valid 2x2 matrix?",
@@ -109,6 +115,7 @@ final matrixLesson = Lesson(
         "[1,2],[3,4]",
       ],
       answer: "[[1,2],[3,4]]",
+      hint: "A 2x2 matrix has 2 rows and 2 columns.",
     ),
   ],
 );
@@ -155,6 +162,7 @@ final linearSystemsLesson = Lesson(
           "True or False: A system with det(A) = 0 always has no solution.",
       type: QuestionType.trueFalse,
       answer: "False",
+      hint: "det(A) = 0 can mean none or infinitely many solutions.",
     ),
     QuizProblem(
       question:
@@ -167,11 +175,13 @@ final linearSystemsLesson = Lesson(
         "Factorization",
       ],
       answer: "Gaussian elimination",
+      hint: "Think of row operations used in augmented matrices.",
     ),
     QuizProblem(
       question: "Solve the system: x + y = 3, x - y = 1",
       type: QuestionType.typing,
       answer: "x=2,y=1",
+      hint: "Add both equations to eliminate y first.",
     ),
   ],
 );
@@ -203,11 +213,13 @@ final determinantsRankLesson = Lesson(
           "True or False: If a square matrix has rank less than its size, it is invertible.",
       type: QuestionType.trueFalse,
       answer: "False",
+      hint: "Invertible square matrices must have full rank.",
     ),
     QuizProblem(
       question: "Compute the determinant: [[1,2],[3,4]]",
       type: QuestionType.typing,
       answer: "-2",
+      hint: "Use ad - bc for 2x2 matrices.",
     ),
   ],
 );
@@ -243,12 +255,15 @@ final eigenLesson = Lesson(
           "True or False: Eigenvectors can be scaled by any nonzero scalar.",
       type: QuestionType.trueFalse,
       answer: "True",
+      hint: "Direction matters; length can be scaled.",
     ),
     QuizProblem(
       question: "Which equation defines eigenvalues λ?",
       type: QuestionType.multipleChoice,
       options: ["Av = λv", "A+v = λv", "det(A) = λ", "Av = v"],
       answer: "Av = λv",
+      hint:
+          "Eigenvalue relation compares a transformed vector to itself scaled.",
     ),
   ],
 );
@@ -280,11 +295,13 @@ final orthogonalityLesson = Lesson(
       question: "True or False: Dot product of orthogonal vectors is zero.",
       type: QuestionType.trueFalse,
       answer: "True",
+      hint: "Orthogonality is defined by a zero dot product.",
     ),
     QuizProblem(
       question: "Compute the projection of u=(3,4) onto v=(1,0)",
       type: QuestionType.typing,
       answer: "(3,0)",
+      hint: "Projecting onto (1,0) keeps only the x-component.",
     ),
   ],
 );
@@ -315,6 +332,7 @@ final diagonalizationLesson = Lesson(
       question: "True or False: Every square matrix is diagonalizable.",
       type: QuestionType.trueFalse,
       answer: "False",
+      hint: "Some matrices do not have enough independent eigenvectors.",
     ),
   ],
 );
@@ -344,6 +362,7 @@ final vectorSpacesLesson = Lesson(
           "True or False: A basis must consist of linearly independent vectors.",
       type: QuestionType.trueFalse,
       answer: "True",
+      hint: "A dependent set cannot serve as a basis.",
     ),
   ],
 );
@@ -367,6 +386,7 @@ final applicationsLesson = Lesson(
           "True or False: PCA uses eigenvectors to reduce data dimensions.",
       type: QuestionType.trueFalse,
       answer: "True",
+      hint: "PCA uses principal components derived from eigenvectors.",
     ),
   ],
 );

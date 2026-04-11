@@ -20,11 +20,13 @@ final mechanicsLesson = Lesson(
       question: "Compute the force for mass = 2kg, acceleration = 3 m/s²",
       type: QuestionType.typing,
       answer: "6",
+      hint: "Use Newton's second law: F = m * a.",
     ),
     QuizProblem(
       question: "True or False: For every action, there is no reaction.",
       type: QuestionType.trueFalse,
       answer: "False",
+      hint: "Newton's third law says action and reaction come in pairs.",
     ),
   ],
 );
@@ -46,11 +48,13 @@ final energyLesson = Lesson(
       question: "A 5kg object moves at 4 m/s. Find its kinetic energy.",
       type: QuestionType.typing,
       answer: "40",
+      hint: "Apply KE = 1/2 * m * v^2.",
     ),
     QuizProblem(
       question: "True or False: Work and energy are measured in Joules.",
       type: QuestionType.trueFalse,
       answer: "True",
+      hint: "The SI unit for both is J.",
     ),
   ],
 );

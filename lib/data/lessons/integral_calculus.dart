@@ -23,11 +23,13 @@ final integrationBasicsLesson = Lesson(
       question: "Find the indefinite integral of f(x) = 2x.",
       type: QuestionType.typing,
       answer: "x^2 + C",
+      hint: "Use the power rule for integrals and remember + C.",
     ),
     QuizProblem(
       question: "True or False: Integration always reverses differentiation.",
       type: QuestionType.trueFalse,
       answer: "True",
+      hint: "Indefinite integration is an antiderivative operation.",
     ),
   ],
 );
@@ -54,11 +56,13 @@ final definiteIntegralsLesson = Lesson(
       question: "Compute ∫[0,2] 3x^2 dx",
       type: QuestionType.typing,
       answer: "8",
+      hint: "Find an antiderivative first, then evaluate upper minus lower.",
     ),
     QuizProblem(
       question: "True or False: Definite integrals give a numeric value.",
       type: QuestionType.trueFalse,
       answer: "True",
+      hint: "Definite integrals evaluate across bounds.",
     ),
   ],
 );
