@@ -174,7 +174,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
+                            builder: (context) => HomeScreen(
+                              onTextScaleChanged: (scale) {
+                                // TODO: handle global text scaling here
+                                debugPrint("Text scale changed: $scale");
+                              },
+                            ),
                           ),
                         );
                       },
@@ -218,7 +223,14 @@ class _LoginScreenState extends State<LoginScreen> {
     await LocalStorage.setLevel(1);
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
+          onTextScaleChanged: (scale) {
+            // TODO: handle global text scaling here
+            debugPrint("Text scale changed: $scale");
+          },
+        ),
+      ),
     );
   }
 

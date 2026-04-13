@@ -10,6 +10,7 @@ class LocalStorage {
   static const _keyGuestExp = 'guestExp';
   static const _keyGuestCoins = 'guestCoins';
   static const _keyGuestLevel = 'guestLevel';
+  static const _textScaleKey = 'text_scale';
 
   // Save login state
   static Future<void> setLoggedIn(bool value) async {
@@ -459,5 +460,15 @@ class LocalStorage {
     }
     await setCoins(current - amount);
     return true;
+  }
+  
+  static Future<void> setTextScale(double scale) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_textScaleKey, scale);
+  }
+
+  static Future<double?> getTextScale() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(_textScaleKey);
   }
 }
