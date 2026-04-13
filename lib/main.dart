@@ -13,10 +13,40 @@ void main() async {
   runApp(MainApp(startLoggedIn: loggedIn));
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   final bool startLoggedIn;
 
   const MainApp({super.key, required this.startLoggedIn});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  double _textScale = 1.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTextScale(); // ✅ LOAD SAVED VALUE
+  }
+
+  void _updateTextScale(double scale) async {
+    setState(() {
+      _textScale = scale;
+    });
+
+    await LocalStorage.setTextScale(scale); // ✅ SAVE VALUE
+  }
+
+  Future<void> _loadTextScale() async {
+    final savedScale = await LocalStorage.getTextScale();
+    if (savedScale != null) {
+      setState(() {
+        _textScale = savedScale;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +58,21 @@ class MainApp extends StatelessWidget {
           theme: buildAppTheme(),
           darkTheme: buildDarkTheme(),
           themeMode: mode,
+
+          // ✅ GLOBAL TEXT SCALING
+          builder: (context, child) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.linear(_textScale),
+              ),
+              child: child!,
+            );
+          },
+
           home: FutureBuilder<Map<String, bool>>(
             future: _loadStartupState(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                // Show loading spinner while checking storage
                 return const Scaffold(
                   body: Center(child: CircularProgressIndicator()),
                 );
@@ -47,14 +87,13 @@ class MainApp extends StatelessWidget {
                 return const OnboardingScreen();
               }
 
-              return loggedIn ? const HomeScreen() : const LoginScreen();
+              return loggedIn
+                  ? HomeScreen(
+                      onTextScaleChanged: _updateTextScale,
+                    )
+                  : const LoginScreen();
             },
           ),
-          routes: {
-            '/onboarding': (context) => const OnboardingScreen(),
-            // '/login': (context) => const LoginWrapper(),
-            // '/dragdrop': (context) => const DragAndDropTest(),
-          },
         );
       },
     );
@@ -64,6 +103,9 @@ class MainApp extends StatelessWidget {
     final seenOnboarding = await LocalStorage.hasSeenOnboarding();
     final loggedIn = await LocalStorage.isLoggedIn();
 
-    return {'hasSeenOnboarding': seenOnboarding, 'loggedIn': loggedIn};
+    return {
+      'hasSeenOnboarding': seenOnboarding,
+      'loggedIn': loggedIn,
+    };
   }
 }

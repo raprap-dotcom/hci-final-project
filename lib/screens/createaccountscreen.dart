@@ -173,7 +173,14 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     }
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(
+        builder: (context) => HomeScreen(
+          onTextScaleChanged: (scale) {
+            // TODO: handle global text scaling here
+            debugPrint("Text scale changed: $scale");
+          },
+        ),
+      ),
     );
   }
 

@@ -106,7 +106,12 @@ class _LessonCompletionPiePainter extends CustomPainter {
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final ValueChanged<double> onTextScaleChanged;
+
+  const HomeScreen({
+    super.key,
+    required this.onTextScaleChanged,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -121,6 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showBottomNavTutorial = false;
   bool _showBottomNavTutorialIntro = false;
   int _tutorialStepIndex = 0;
+  double _textScale = 1.0;
 
   final List<GlobalKey> _bottomNavItemKeys = List.generate(
     5,
@@ -955,13 +961,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     : _showSettingsContent
                     ? SettingsPage(
                         onGoToSubjects: () {
-                          setState(() {
-                            _showHomeContent = false;
-                            _showSettingsContent = false;
-                            _showShopContent = false;
-                            _showAboutContent = false;
-                            _selectedIndex = 2; // Subjects index
-                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ProfilePage(
+                                avatars: avatars,
+                                selectedAvatar: _selectedAvatar,
+                                onChangeAvatar: _showAvatarPicker,
+                                onLogout: () {},
+                                onOpenSettings: () {},
+                              ),
+                            ),
+                          );
+                        },
+                        onTextScaleChanged: (scale) {
+                          widget.onTextScaleChanged(scale);
                         },
                       )
                     : _showShopContent
